@@ -21,6 +21,7 @@ struct distance_table
 
 void rtinit2() 
 {
+  printf("\nRINIT2\n");
 }
 
 
@@ -28,6 +29,7 @@ void rtupdate2(rcvdpkt)
   struct rtpkt *rcvdpkt;
   
 {
+  printf("\nUPDATE2\n");
 
 }
 

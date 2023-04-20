@@ -15,19 +15,46 @@ struct distance_table
 {
   int costs[4][4];
 } dt0;
+// costs[to][from] ?
 
+/*
+Values based on assignment sheet
+      0 1 2 3
+      -------
+  0 | 0 1 3 7
+  1 | 1 0 1 i
+  2 | 3 1 0 2
+  3 | 7 i 2 0
+*/
 
 /* students to write the following two routines, and maybe some others */
 
 void rtinit0() 
 {
+  printf("\nRINIT0\n");
+  // Set initial values in distance table
+  dt0.costs[0][1] = 1;
+  dt0.costs[0][2] = 3;
+  dt0.costs[0][3] = 7;
 
+  // create routing packet to send
+  struct rtpkt packet;
+  packet.sourceid = 0;
+  packet.destid = 1;
+  packet.mincost[0] = 0;
+  packet.mincost[1] = 1;
+  packet.mincost[2] = 3;
+  packet.mincost[3] = 7;
+
+  // Send packet to nieghbors
+  tolayer2(packet);
 }
 
 
 void rtupdate0(rcvdpkt)
   struct rtpkt *rcvdpkt;
 {
+  printf("\nUPDATE0\n");
 
 }
 
