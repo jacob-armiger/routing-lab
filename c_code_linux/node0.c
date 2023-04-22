@@ -32,7 +32,17 @@ Values based on assignment sheet
 void rtinit0() 
 {
   printf("\nRINIT0\n");
+  // Set all values to infinity in distance table
+  for(int i = 0; i < 4; i++) {
+    for(int j = 0; j < 4; j++) {
+      dt0.costs[i][j] = 999; 
+    }
+  }
+  printdt0(&dt0);
+  printf("\n");
+
   // Set initial values in distance table
+  dt0.costs[0][0] = 0;
   dt0.costs[0][1] = 1;
   dt0.costs[0][2] = 3;
   dt0.costs[0][3] = 7;
@@ -40,14 +50,21 @@ void rtinit0()
   // create routing packet to send
   struct rtpkt packet;
   packet.sourceid = 0;
-  packet.destid = 1;
+  packet.destid = NULL;
   packet.mincost[0] = 0;
   packet.mincost[1] = 1;
   packet.mincost[2] = 3;
   packet.mincost[3] = 7;
 
-  // Send packet to nieghbors
-  tolayer2(packet);
+  for(int i = 0; i < 4; i++) {
+    packet.destid = i;
+    if(packet.sourceid == packet.destid || packet.mincost[i] == 999) {
+      continue;
+    }
+
+    // Send packet to nieghbors
+    tolayer2(packet);
+  }
 }
 
 

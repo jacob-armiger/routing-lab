@@ -21,6 +21,38 @@ struct distance_table
 void rtinit3() 
 {
   printf("\nRINIT3\n");
+  // Set all values to infinity in distance table
+  for(int i = 0; i < 4; i++) {
+    for(int j = 0; j < 4; j++) {
+      dt3.costs[i][j] = 999; 
+    }
+  }
+  printdt3(&dt3);
+  printf("\n");
+
+  // Set initial values in distance table
+  dt3.costs[3][0] = 7;
+  dt3.costs[3][1] = 999; // Still infinity
+  dt3.costs[3][2] = 2;
+  dt3.costs[3][3] = 0;
+
+  // create routing packet to send
+  struct rtpkt packet;
+  packet.sourceid = 3;
+  packet.destid = NULL;
+  packet.mincost[0] = 7;
+  packet.mincost[1] = 999;
+  packet.mincost[2] = 2;
+  packet.mincost[3] = 0;
+
+  for(int i = 0; i < 4; i++) {
+    packet.destid = i;
+    if(packet.sourceid == packet.destid || packet.mincost[i] == 999) {
+      continue;
+    }
+    // Send packet to nieghbors
+    tolayer2(packet);
+  }
 }
 
 
