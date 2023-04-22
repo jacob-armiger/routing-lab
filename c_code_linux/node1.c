@@ -32,14 +32,14 @@ rtinit1()
       dt1.costs[i][j] = 999; 
     }
   }
-  printdt1(&dt1);
-  printf("\n");
 
   // Set initial values in distance table
-  dt1.costs[1][0] = 1;
+  dt1.costs[0][0] = 1;
   dt1.costs[1][1] = 0;
-  dt1.costs[1][2] = 1;
-  dt1.costs[1][3] = 999;  // Still infinity
+  dt1.costs[2][2] = 1;
+  dt1.costs[3][3] = 999; // Still infinity
+  printdt1(&dt1);
+  printf("\n");
 
   // create routing packet to send
   struct rtpkt packet;

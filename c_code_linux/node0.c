@@ -15,17 +15,7 @@ struct distance_table
 {
   int costs[4][4];
 } dt0;
-// costs[to][from] ?
-
-/*
-Values based on assignment sheet
-      0 1 2 3
-      -------
-  0 | 0 1 3 7
-  1 | 1 0 1 i
-  2 | 3 1 0 2
-  3 | 7 i 2 0
-*/
+/*------- costs[VIA][DESTINATION] --------*/
 
 /* students to write the following two routines, and maybe some others */
 
@@ -38,14 +28,14 @@ void rtinit0()
       dt0.costs[i][j] = 999; 
     }
   }
-  printdt0(&dt0);
   printf("\n");
 
   // Set initial values in distance table
   dt0.costs[0][0] = 0;
-  dt0.costs[0][1] = 1;
-  dt0.costs[0][2] = 3;
-  dt0.costs[0][3] = 7;
+  dt0.costs[1][1] = 1;
+  dt0.costs[2][2] = 3;
+  dt0.costs[3][3] = 7;
+  printdt0(&dt0);
 
   // create routing packet to send
   struct rtpkt packet;
@@ -71,7 +61,15 @@ void rtinit0()
 void rtupdate0(rcvdpkt)
   struct rtpkt *rcvdpkt;
 {
-  printf("\nUPDATE0\n");
+  printf("\nUPDATE 0 FROM %d\n", rcvdpkt->sourceid);
+  int sendUpdate = 0; //initialize false
+
+  int sender = rcvdpkt->sourceid;
+  for(int i = 0; i < 0; i++) {
+    // dt0.costs[0][i]
+    // rcvdpkt->mincost[i]
+  }
+
 
 }
 

@@ -28,14 +28,14 @@ void rtinit2()
       dt2.costs[i][j] = 999; 
     }
   }
-  printdt2(&dt2);
-  printf("\n");
 
   // Set initial values in distance table
-  dt2.costs[2][0] = 3;
-  dt2.costs[2][1] = 1;
+  dt2.costs[0][0] = 3;
+  dt2.costs[1][1] = 1;
   dt2.costs[2][2] = 0;
-  dt2.costs[2][3] = 2;
+  dt2.costs[3][3] = 2;
+  printdt2(&dt2);
+  printf("\n");
 
   // create routing packet to send
   struct rtpkt packet;
