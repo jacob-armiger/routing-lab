@@ -94,6 +94,7 @@ void rtupdate0(rcvdpkt)
       struct rtpkt packet;
       packet.sourceid = 0;
       packet.destid = NULL;
+      // Get the min costs from node 0 to the sender via other destinations
       packet.mincost[0] = dt0.costs[0][sender];
       packet.mincost[1] = dt0.costs[1][sender];;
       packet.mincost[2] = dt0.costs[2][sender];;
