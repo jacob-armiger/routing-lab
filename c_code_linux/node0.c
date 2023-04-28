@@ -15,7 +15,7 @@ struct distance_table
 {
   int costs[4][4];
 } dt0;
-/*------- costs[VIA][DESTINATION] --------*/
+/*------- costs[DESTINATION][VIA] --------*/
 
 /* students to write the following two routines, and maybe some others */
 
@@ -31,6 +31,7 @@ void rtinit0()
   printf("\n");
 
   // Set initial values in distance table
+  // These are the costs to go from node 0 to node[destination] through node[via]
   dt0.costs[0][0] = 0;
   dt0.costs[1][1] = 1;
   dt0.costs[2][2] = 3;
