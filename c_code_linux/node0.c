@@ -49,11 +49,12 @@ void rtinit0()
 
   for(int i = 0; i < 4; i++) {
     packet.destid = i;
+    // Don't send to self or if the cost is infinity
     if(packet.sourceid == packet.destid || packet.mincost[i] == 999) {
       continue;
     }
 
-    // Send packet to nieghbors
+    // Send packet to each nieghbor
     tolayer2(packet);
   }
 }
@@ -66,12 +67,52 @@ void rtupdate0(rcvdpkt)
   int sendUpdate = 0; //initialize false
 
   int sender = rcvdpkt->sourceid;
-  for(int i = 0; i < 0; i++) {
-    // dt0.costs[0][i]
-    // rcvdpkt->mincost[i]
+
+  // Cost between node 0 and the sender
+  int cost_to_source = dt0.costs[sender][sender];
+
+  // Loop through destinations
+  for(int i = 0; i < 4; i++) {
+    // Current cost from sender to other destinations via the sender
+    int cost_to_destination = rcvdpkt->mincost[i];
+
+    // Cost to go directly to destination from node 0
+    int direct_cost = dt0.costs[i][i];
+
+    int path_cost = cost_to_source + cost_to_destination;
+
+    // Update cost table if the cost is less
+    if(path_cost < direct_cost) {
+      // Update node 0 cost table since a more efficient route is found
+      dt0.costs[i][sender] = path_cost;
+      // Send update since there has been a change
+      sendUpdate = 1;
+    }
+
+    if(sendUpdate) {
+      // create routing packet to send
+      struct rtpkt packet;
+      packet.sourceid = 0;
+      packet.destid = NULL;
+      packet.mincost[0] = dt0.costs[0][sender];
+      packet.mincost[1] = dt0.costs[1][sender];;
+      packet.mincost[2] = dt0.costs[2][sender];;
+      packet.mincost[3] = dt0.costs[3][sender];;
+      
+      for(int i = 0; i < 4; i++) {
+        packet.destid = i;
+        // Don't send to self or if the cost is infinity
+        if(packet.sourceid == packet.destid || packet.mincost[i] == 999) {
+          continue;
+        }
+
+        // Send packet to each nieghbor
+        tolayer2(packet);
+      }
+    }
   }
-
-
+  // Print updated table
+  printdt0(&dt0);
 }
 
 
