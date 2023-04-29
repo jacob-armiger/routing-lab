@@ -100,7 +100,7 @@ rtupdate1(rcvdpkt)
 			packet.mincost[1] = dt1.costs[1][sender];;
 			packet.mincost[2] = dt1.costs[2][sender];;
 			packet.mincost[3] = dt1.costs[3][sender];;
-			
+
 			for (int i = 0; i < 4; i++) {
 				packet.destid = i;
 				//don't send to self or if the cost is infinity
@@ -130,14 +130,38 @@ printdt1(dtptr)
 
 
 
-linkhandler1(linkid, newcost)   
-	int linkid, newcost;   
-	/* called when cost from 1 to linkid changes from current value to newcost*/
-	/* You can leave this routine empty if you're an undergrad. If you want */
-	/* to use this routine, you'll need to change the value of the LINKCHANGE */
-	/* constant definition in prog3.c from 0 to 1 */
+linkhandler1(int linkid, int newcost) {
 
-{
+	//update the local distance table
+
+	//compute distances for each row for linkid
+	for (int i=0; i<4; i++) {
+		if (dt1.costs[i][linkid] != 999) {
+			//if cost is not infinity, subtract old cost at index and add the new cost for that index
+			dt1.costs[i][linkid] -= dt1.costs[linkid][linkid];
+		}
+	}
+
+
+	//send distance updates
+	struct rtpkt packet;
+	packet.sourceid = 0;
+	packet.destid = NULL;
+	packet.mincost[0] = dt1.costs[0][linkid];
+	packet.mincost[1] = dt1.costs[1][linkid];
+	packet.mincost[2] = dt1.costs[2][linkid];
+	packet.mincost[3] = dt1.costs[3][linkid];
+
+	for (int i=0; i<4; i++) {
+		packet.destid = i;
+
+		if(packet.sourceid == packet.destid || packet.mincost[i] == 999) {
+			continue;
+		}
+
+		tolayer2(packet);
+	}
+
 }
 
 
