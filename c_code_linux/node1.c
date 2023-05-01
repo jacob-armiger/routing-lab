@@ -135,14 +135,13 @@ linkhandler1(int linkid, int newcost) {
   	printf("\nLINKHANDLER1 %d\n", newcost);
 
 	//compute distances for each row for linkid
-	// for (int i=0; i<4; i++) {
-	// 	if (dt1.costs[i][linkid] != 999) {
-	// 		//if cost is not infinity, subtract old cost at index and add the new cost for that index
-	// 		dt1.costs[i][linkid] -= dt1.costs[linkid][linkid];
-	// 	}
-	// }
-
-	dt1.costs[linkid][linkid] = newcost;
+	for (int i=0; i<4; i++) {
+	 	if (dt1.costs[i][linkid] != 999) {
+	 		//if cost is not infinity, subtract old cost at index and add the new cost for that index
+	 		dt1.costs[i][linkid] -= dt1.costs[linkid][linkid];
+			dt1.costs[i][linkid] += newcost;
+	 	}
+	}
 
 	//send distance updates
 	struct rtpkt packet;

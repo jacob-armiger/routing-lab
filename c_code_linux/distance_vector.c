@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h> // M. Yuksel
 
-#define LINKCHANGES 1 
+#define LINKCHANGES 1
 /* ******************************************************************
 Programming assignment 3: implementing distributed, asynchronous,
                           distance vector routing.
