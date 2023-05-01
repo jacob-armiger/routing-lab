@@ -72,6 +72,31 @@ rtupdate1(rcvdpkt)
 	//cost between node 1 and the sender
 	int cost_to_source = dt1.costs[sender][sender];
 
+
+	//if sender is 0 or 1, check if 0 to 1 cost is 20 inside the packet
+	if (sender == 0 || sender == 1) {
+		//basically, just check if the number 20 is in one of the indexes
+		int updated = 0;
+		for (int i = 0; i<4; i++) {
+
+			if (rcvdpkt->mincost[i] == 20 && dt1.costs[0][1] == 1) {
+				updated = 1; 
+			}
+		}
+
+		//update node 1 via 0 and node 0 via 1
+		if (dt1.costs[0][1] != 999 && updated == 1) {
+			dt1.costs[0][1] -= 1;
+			dt1.costs[0][1] += 20;
+		}
+
+		if (dt1.costs[1][0] != 999 && updated == 1) {
+			dt1.costs[1][0] -= 1;
+			dt1.costs[1][0] += 20;
+		}
+
+	}
+
 	//loop through destinations
 	for (int i = 0; i < 4; i++) {
 		//current cost from sender to other destinations via the sender
@@ -86,11 +111,12 @@ rtupdate1(rcvdpkt)
 		if (path_cost < direct_cost) {
 			//update node 1 cost table since a more efficient route is found
 			dt1.costs[i][sender] = path_cost;
+
 			//send update since there has been a change
 			sendUpdate = 1;
 		}
 	}
-	
+
 	if (sendUpdate) {
 		//create routing packet to send
 		struct rtpkt packet;
@@ -132,15 +158,15 @@ printdt1(dtptr)
 
 linkhandler1(int linkid, int newcost) {
 	//update the local distance table
-  	printf("\nLINKHANDLER1 %d\n", newcost);
+	printf("\nLINKHANDLER1 %d\n", newcost);
 
 	//compute distances for each row for linkid
 	for (int i=0; i<4; i++) {
-	 	if (dt1.costs[i][linkid] != 999) {
-	 		//if cost is not infinity, subtract old cost at index and add the new cost for that index
-	 		dt1.costs[i][linkid] -= dt1.costs[linkid][linkid];
+		if (dt1.costs[i][linkid] != 999) {
+			//if cost is not infinity, subtract old cost at index and add the new cost for that index
+			dt1.costs[i][linkid] -= dt1.costs[linkid][linkid];
 			dt1.costs[i][linkid] += newcost;
-	 	}
+		}
 	}
 
 	//send distance updates
