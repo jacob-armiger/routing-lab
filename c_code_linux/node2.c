@@ -61,7 +61,7 @@ void rtupdate2(rcvdpkt)
 	struct rtpkt *rcvdpkt;
 
 {
-	printf("\nUPDATE2\n");
+	printf("\nUPDATE 2 FROM %d\n", rcvdpkt->sourceid);
 	int sendUpdate = 0;
 	int sender = rcvdpkt->sourceid;
 
@@ -80,31 +80,31 @@ void rtupdate2(rcvdpkt)
 
 		//update cost table if the cost is less
 		if (path_cost < direct_cost) {
-			//update node 1 cost table since a more efficient route is found
+			//update node 2 cost table since a more efficient route is found
 			dt2.costs[i][sender] = path_cost;
 			//send update since there has been a change
 			sendUpdate = 1;
 		}
+	}
+	
+	if (sendUpdate) {
+		//create routing packet to send
+		struct rtpkt packet;
+		packet.sourceid = 0;
+		packet.destid = NULL;
+		// get the min costs from node 0 to the sender via other destinations
+		packet.mincost[0] = dt2.costs[0][sender];
+		packet.mincost[1] = dt2.costs[1][sender];
+		packet.mincost[2] = dt2.costs[2][sender];
+		packet.mincost[3] = dt2.costs[3][sender];
 
-		if (sendUpdate) {
-			//create routing packet to send
-			struct rtpkt packet;
-			packet.sourceid = 0;
-			packet.destid = NULL;
-			// get the min costs from node 0 to the sender via other destinations
-			packet.mincost[0] = dt2.costs[0][sender];
-			packet.mincost[1] = dt2.costs[1][sender];;
-			packet.mincost[2] = dt2.costs[2][sender];;
-			packet.mincost[3] = dt2.costs[3][sender];;
+		for (int i = 0; i < 4; i++) {
+			packet.destid = i;
+			//don't send to self or if the cost is infinity
+			if (packet.sourceid == packet.destid || packet.mincost[i] == 999) continue;   
 
-			for (int i = 0; i < 4; i++) {
-				packet.destid = i;
-				//don't send to self or if the cost is infinity
-				if (packet.sourceid == packet.destid || packet.mincost[i] == 999) continue;   
-
-				//send packet to each neighbor
-				tolayer2(packet);
-			}
+			//send packet to each neighbor
+			tolayer2(packet);
 		}
 	}
 	printdt2(&dt2);

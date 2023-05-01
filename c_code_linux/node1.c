@@ -65,7 +65,7 @@ rtupdate1(rcvdpkt)
 	struct rtpkt *rcvdpkt;
 
 {
-	printf("\nUPDATE1\n");
+	printf("\nUPDATE 1 FROM %d\n", rcvdpkt->sourceid);
 	int sendUpdate = 0;
 	int sender = rcvdpkt->sourceid;
 
@@ -89,26 +89,26 @@ rtupdate1(rcvdpkt)
 			//send update since there has been a change
 			sendUpdate = 1;
 		}
+	}
+	
+	if (sendUpdate) {
+		//create routing packet to send
+		struct rtpkt packet;
+		packet.sourceid = 0;
+		packet.destid = NULL;
+		// get the min costs from node 0 to the sender via other destinations
+		packet.mincost[0] = dt1.costs[0][sender];
+		packet.mincost[1] = dt1.costs[1][sender];
+		packet.mincost[2] = dt1.costs[2][sender];
+		packet.mincost[3] = dt1.costs[3][sender];
 
-		if (sendUpdate) {
-			//create routing packet to send
-			struct rtpkt packet;
-			packet.sourceid = 0;
-			packet.destid = NULL;
-			// get the min costs from node 0 to the sender via other destinations
-			packet.mincost[0] = dt1.costs[0][sender];
-			packet.mincost[1] = dt1.costs[1][sender];;
-			packet.mincost[2] = dt1.costs[2][sender];;
-			packet.mincost[3] = dt1.costs[3][sender];;
+		for (int i = 0; i < 4; i++) {
+			packet.destid = i;
+			//don't send to self or if the cost is infinity
+			if (packet.sourceid == packet.destid || packet.mincost[i] == 999) continue; 
 
-			for (int i = 0; i < 4; i++) {
-				packet.destid = i;
-				//don't send to self or if the cost is infinity
-				if (packet.sourceid == packet.destid || packet.mincost[i] == 999) continue; 
-
-				//send packet to each neighbor
-				tolayer2(packet);
-			}
+			//send packet to each neighbor
+			tolayer2(packet);
 		}
 	}
 	printdt1(&dt1);
@@ -131,17 +131,18 @@ printdt1(dtptr)
 
 
 linkhandler1(int linkid, int newcost) {
-
 	//update the local distance table
+  	printf("\nLINKHANDLER1 %d\n", newcost);
 
 	//compute distances for each row for linkid
-	for (int i=0; i<4; i++) {
-		if (dt1.costs[i][linkid] != 999) {
-			//if cost is not infinity, subtract old cost at index and add the new cost for that index
-			dt1.costs[i][linkid] -= dt1.costs[linkid][linkid];
-		}
-	}
+	// for (int i=0; i<4; i++) {
+	// 	if (dt1.costs[i][linkid] != 999) {
+	// 		//if cost is not infinity, subtract old cost at index and add the new cost for that index
+	// 		dt1.costs[i][linkid] -= dt1.costs[linkid][linkid];
+	// 	}
+	// }
 
+	dt1.costs[linkid][linkid] = newcost;
 
 	//send distance updates
 	struct rtpkt packet;
@@ -161,7 +162,7 @@ linkhandler1(int linkid, int newcost) {
 
 		tolayer2(packet);
 	}
-
+	printdt1(&dt1);
 }
 
 

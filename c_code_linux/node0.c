@@ -88,28 +88,28 @@ void rtupdate0(rcvdpkt)
 			// Send update since there has been a change
 			sendUpdate = 1;
 		}
+	}
+	
+	if(sendUpdate) {
+		// create routing packet to send
+		struct rtpkt packet;
+		packet.sourceid = 0;
+		packet.destid = NULL;
+		// Get the min costs from node 0 to the sender via other destinations
+		packet.mincost[0] = dt0.costs[0][sender];
+		packet.mincost[1] = dt0.costs[1][sender];
+		packet.mincost[2] = dt0.costs[2][sender];
+		packet.mincost[3] = dt0.costs[3][sender];
 
-		if(sendUpdate) {
-			// create routing packet to send
-			struct rtpkt packet;
-			packet.sourceid = 0;
-			packet.destid = NULL;
-			// Get the min costs from node 0 to the sender via other destinations
-			packet.mincost[0] = dt0.costs[0][sender];
-			packet.mincost[1] = dt0.costs[1][sender];;
-			packet.mincost[2] = dt0.costs[2][sender];;
-			packet.mincost[3] = dt0.costs[3][sender];;
-
-			for(int i = 0; i < 4; i++) {
-				packet.destid = i;
-				// Don't send to self or if the cost is infinity
-				if(packet.sourceid == packet.destid || packet.mincost[i] == 999) {
-					continue;
-				}
-
-				// Send packet to each nieghbor
-				tolayer2(packet);
+		for(int i = 0; i < 4; i++) {
+			packet.destid = i;
+			// Don't send to self or if the cost is infinity
+			if(packet.sourceid == packet.destid || packet.mincost[i] == 999) {
+				continue;
 			}
+
+			// Send packet to each nieghbor
+			tolayer2(packet);
 		}
 	}
 	// Print updated table
@@ -133,15 +133,17 @@ printdt0(dtptr)
 }
 
 linkhandler0(int linkid, int newcost) {
-	//update the local distance table
+  	printf("\nLINKHANDLER0 %d\n", newcost);
 
 	//compute distances for each row for linkid
-	for (int i=0; i<4; i++) {
-		if (dt0.costs[i][linkid] != 999) {
-			//if cost is not infinity, subtract old cost at index and add the new cost for that index
-			dt0.costs[i][linkid] -= dt0.costs[linkid][linkid];
-		}
-	}
+	// for (int i=0; i<4; i++) {
+	// 	if (dt0.costs[i][linkid] != 999) {
+	// 		//if cost is not infinity, subtract old cost at index and add the new cost for that index
+	// 		dt0.costs[i][linkid] -= dt0.costs[linkid][linkid];
+	// 	}
+	// }
+
+	dt0.costs[linkid][linkid] = newcost;
 
 	struct rtpkt packet;
 	packet.sourceid = 0;
@@ -160,5 +162,6 @@ linkhandler0(int linkid, int newcost) {
 
 		tolayer2(packet);
 	}
+	printdt0(&dt0);
 }
 
